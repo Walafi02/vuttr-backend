@@ -1,8 +1,10 @@
 import jwt from 'jsonwebtoken';
 import * as Yup from 'yup';
+import bcrypt from 'bcryptjs';
 
-import { User } from '../models';
 import authConfig from '../../config/auth';
+
+import Users from '../schemas/Users';
 
 class SessionController {
   async store(req, res) {
@@ -11,21 +13,25 @@ class SessionController {
       password: Yup.string().required(),
     });
 
-    if (!(await schema.isValid(req.body)))
-      return res.status(401).json({ error: 'Campos Inválidos' });
+    if (!(await schema.isValid(req.body))) {
+      return res.status(401).json({ error: 'Error in field validation' });
+    }
 
     const { email, password } = req.body;
 
-    const user = await User.findOne({
-      where: { email },
+    const user = await Users.findOne({
+      email,
     });
 
-    if (!user) return res.status(401).json({ error: 'Usuario não encontrado' });
+    if (!user) {
+      return res.status(401).json({ error: 'User does not exist' });
+    }
 
-    if (!(await user.checkPassword(password)))
-      return res.status(401).json({ error: 'Senha incorreta' });
+    if (!(await bcrypt.compare(password, user.password_hash))) {
+      return res.status(401).json({ error: 'Password does not match' });
+    }
 
-    const { id, name } = user;
+    const { _id: id, name } = user;
 
     return res.json({
       user: {

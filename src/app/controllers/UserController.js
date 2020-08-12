@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs';
 import * as Yup from 'yup';
 
-import { User } from '../models';
+import { Users } from '../schemas';
 
 class UserController {
   async store(req, res) {
@@ -11,25 +11,27 @@ class UserController {
       password: Yup.string().min(6).required(),
     });
 
-    if (!(await schema.isValid(req.body)))
-      return res.status(400).json({ error: 'Error de validação dos campos' });
+    if (!(await schema.isValid(req.body))) {
+      return res.status(400).json({ error: 'Error in field validation' });
+    }
 
-    const { email, password } = req.body;
+    const { name, email, password } = req.body;
 
-    const user = await User.findOne({
-      where: {
-        email,
-      },
+    const userExist = await Users.findOne({
+      email,
     });
 
-    if (user) return res.status(400).json({ error: 'E-mail já cadastrado' });
+    if (userExist) {
+      return res.status(400).json({ error: 'E-mail already exists' });
+    }
 
-    await User.create({
-      ...req.body,
+    const { _id: id } = await Users.create({
+      name,
+      email,
       password_hash: bcrypt.hashSync(password, 8),
     });
 
-    return res.json();
+    return res.json({ id, name, email });
   }
 }
 

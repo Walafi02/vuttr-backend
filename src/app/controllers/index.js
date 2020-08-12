@@ -1,4 +1,5 @@
 import UserController from './UserController';
 import SessionController from './SessionController';
+import ToolsController from './ToolsController';
 
-export { UserController, SessionController };
+export { UserController, SessionController, ToolsController };
