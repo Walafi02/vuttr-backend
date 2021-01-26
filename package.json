@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "nodemon src/server",
     "build": "sucrase ./src -d ./dist --transforms imports",
-    "start": "node dist/server.js",
+    "start": "docker-compose up",
     "prod": "yarn build && yarn start"
   },
   "dependencies": {
