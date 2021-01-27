@@ -5,7 +5,7 @@ import cors from 'cors';
 import swaggerUi from 'swagger-ui-express';
 import bodyParser from 'body-parser';
 
-import swaggerDocument from './config/swagger.json';
+import swaggerDocument from './config/swagger';
 import routes from './routes';
 import './database';
 
