@@ -1,64 +1,205 @@
-export default {
-  swagger: '2.0',
+module.exports = {
+  openapi: '3.0.1',
   info: {
-    title: 'Vuttr API',
+    version: '1.0.0',
+    title: 'Very Useful Tools To Remember(VUTTR)',
     description: 'This is a simple api for VUTTR application',
-    version: '1.0',
   },
-  produces: ['application/json'],
+  components: {
+    securitySchemes: {
+      bearerAuth: {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+      },
+    },
+  },
+  tags: [
+    {
+      name: 'Session',
+    },
+    {
+      name: 'User',
+    },
+    {
+      name: 'Tools',
+    },
+  ],
   paths: {
     '/session': {
       post: {
-        tags: ['/session'],
-        consumes: 'application/json',
-        description: 'Description Test',
-        parameters: [
-          {
-            name: 'email',
-            in: 'formData',
-            required: true,
-            type: 'string',
-            format: 'email',
+        tags: ['Session'],
+        summary: 'Create a new session',
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                $ref: '#/definitions/UserSession',
+              },
+            },
           },
-          {
-            name: 'password',
-            in: 'formData',
-            required: true,
-            type: 'string',
-            format: 'password',
+        },
+        produces: ['application/json'],
+        responses: {
+          200: {
+            description: 'OK',
           },
-        ],
-        responses: {},
+          400: {
+            description: 'Failed. Bad post data.',
+          },
+          401: {
+            description: 'Failed. Not authorized',
+          },
+        },
       },
     },
     '/user': {
       post: {
-        tags: ['/user'],
-        consumes: 'application/json',
-        description: 'Create user',
-        parameters: [
-          {
-            name: 'name',
-            in: 'formData',
-            required: true,
-            type: 'string',
+        tags: ['User'],
+        summary: 'Create a new user',
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                $ref: '#/definitions/User',
+              },
+            },
           },
-          {
-            name: 'email',
-            in: 'formData',
-            required: true,
-            type: 'string',
-            format: 'email',
+        },
+        produces: ['application/json'],
+        responses: {
+          200: {
+            description: 'OK',
           },
+          400: {
+            description: 'Failed. Bad post data.',
+          },
+        },
+      },
+    },
+    '/tools': {
+      get: {
+        tags: ['Tools'],
+        summary: 'Get all tools',
+        produces: ['application/json'],
+        security: [
           {
-            name: 'password',
-            in: 'formData',
-            required: true,
-            type: 'string',
-            format: 'password',
+            bearerAuth: [],
           },
         ],
-        responses: {},
+        responses: {
+          200: {
+            description: 'OK',
+          },
+          401: {
+            description: 'Failed. Not authorized',
+          },
+        },
+      },
+      post: {
+        tags: ['Tools'],
+        summary: 'Create a new Tool',
+        produces: ['application/json'],
+        security: [
+          {
+            bearerAuth: [],
+          },
+        ],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  title: {
+                    type: 'string',
+                  },
+                  link: {
+                    type: 'string',
+                  },
+                  description: {
+                    type: 'string',
+                  },
+                  tags: {
+                    type: 'array',
+                    items: {
+                      type: 'string',
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          200: {
+            description: 'OK',
+          },
+          400: {
+            description: 'Failed. Bad post data.',
+          },
+          401: {
+            description: 'Failed. Not authorized',
+          },
+        },
+      },
+    },
+    '/tools/{id}': {
+      delete: {
+        parameters: [
+          {
+            name: 'id',
+            in: 'path',
+            required: true,
+            type: 'string',
+          },
+        ],
+        tags: ['Tools'],
+        summary: 'Delete a tool',
+        produces: ['application/json'],
+        security: [
+          {
+            bearerAuth: [],
+          },
+        ],
+        responses: {
+          200: {
+            description: 'OK',
+          },
+          401: {
+            description: 'Failed. Not authorized',
+          },
+        },
+      },
+    },
+  },
+  definitions: {
+    User: {
+      type: 'object',
+      properties: {
+        name: {
+          type: 'string',
+        },
+        email: {
+          type: 'string',
+        },
+        password: {
+          type: 'string',
+        },
+      },
+    },
+    UserSession: {
+      type: 'object',
+      properties: {
+        email: {
+          type: 'string',
+        },
+        password: {
+          type: 'string',
+        },
       },
     },
   },
