@@ -1,5 +1,8 @@
+import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import * as Yup from 'yup';
+
+import authConfig from '../../config/auth';
 
 import { Users } from '../schemas';
 
@@ -31,7 +34,10 @@ class UserController {
       password_hash: bcrypt.hashSync(password, 8),
     });
 
-    return res.json({ id, name, email });
+    return res.json({
+      user: { id, name, email },
+      token: jwt.sign({ id }, authConfig.secret),
+    });
   }
 }
 
